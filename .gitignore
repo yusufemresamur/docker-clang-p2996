@@ -1,0 +1,6 @@
+# Bazel 
+bazel-bin/
+bazel-out/
+bazel-testlogs/
+bazel-docker-clang-p2996/
+MODULE.bazel.lock
