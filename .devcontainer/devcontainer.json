@@ -1,0 +1,35 @@
+{
+    "name": "dev-${localWorkspaceFolderBasename}",
+    "image": "clang-p2996:latest",
+    "initializeCommand": "bash build.sh",
+    // Run as the image's generic 'dev' user. VS Code remaps its UID/GID to the
+    // host user so bind-mount ownership stays correct.
+    "remoteUser": "dev",
+    "updateRemoteUserUID": true,
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "llvm-vs-code-extensions.vscode-clangd",
+                "bazelbuild.vscode-bazel"
+            ],
+            "settings": {
+                "dev.containers.mountWaylandSocket": false
+            }
+        }
+    },
+    "mounts": [
+        {
+            "source": "${localEnv:HOME}/.cache",
+            "target": "/home/dev/.cache",
+            "type": "bind"
+        },
+        {
+            "source": "${localEnv:HOME}/.gitconfig",
+            "target": "/home/dev/.gitconfig",
+            "type": "bind"
+        }
+    ],
+    "runArgs": [
+        "--network=host"
+    ]
+}
