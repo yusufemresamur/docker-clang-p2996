@@ -1,0 +1,19 @@
+# Compile/link flags for building C++26 reflection (P2996) code with the
+# Bloomberg clang-p2996 toolchain.
+
+# C++26 language mode plus the experimental reflection features:
+#   -freflection           enables ^^ and the [: :] splicers / std::meta builtins
+#   -fexpansion-statements enables `template for`
+build --cxxopt=-std=c++26
+build --cxxopt=-freflection
+build --cxxopt=-fexpansion-statements
+
+# Reflection's <experimental/meta> header ships only with libc++.
+build --cxxopt=-stdlib=libc++
+build --linkopt=-stdlib=libc++
+
+# Use the clang-p2996 driver for Bazel's auto-detected C++ toolchain.
+# Requires clang/clang++ on PATH (e.g. /opt/clang-p2996/bin from the image).
+build --repo_env=CC=clang
+build --repo_env=CXX=clang++
+

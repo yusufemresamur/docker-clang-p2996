@@ -1,0 +1,6 @@
+module(
+    name = "clang_p2996_demo",
+    version = "0.0.1",
+)
+
+bazel_dep(name = "rules_cc", version = "0.2.19")
