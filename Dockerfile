@@ -4,10 +4,13 @@
 # Builder stage: compile Bloomberg's
 # clang-p2996 experimental LLVM project
 #############################################
-FROM debian:trixie AS builder
+FROM debian:trixie-slim AS builder
 
 ARG CLANG_REPO=https://github.com/bloomberg/clang-p2996.git
 ARG CLANG_BRANCH=p2996
+# Optional exact commit to build (set by build.sh from the branch tip). When
+# empty the branch tip is used. Changing it also busts the clone/build cache.
+ARG CLANG_COMMIT=""
 ARG INSTALL_PREFIX=/opt/clang-p2996
 
 # Use all available cores for the build unless overridden.
@@ -39,8 +42,13 @@ ENV CCACHE_MAXSIZE=20G
 
 WORKDIR /src
 
-# Shallow clone of the p2996 branch keeps the image build fast and small.
-RUN git clone --depth 1 --branch "${CLANG_BRANCH}" "${CLANG_REPO}" .
+# Shallow fetch keeps the image build fast and small. Pin to CLANG_COMMIT when
+# provided (build.sh passes the resolved branch tip); otherwise take the branch
+# tip directly.
+RUN git init -q . \
+    && git remote add origin "${CLANG_REPO}" \
+    && git fetch --depth 1 origin "${CLANG_COMMIT:-${CLANG_BRANCH}}" \
+    && git checkout -q FETCH_HEAD
 
 # Configure with CMake. We build clang plus libc++/libc++abi: the compiler
 # provides the `^^` reflection operator and __builtin_* metafunctions, while
@@ -73,7 +81,7 @@ RUN --mount=type=cache,target=/ccache \
 # Target stage: minimal runtime image with
 # the compiled clang-p2996 toolchain
 #############################################
-FROM debian:trixie AS runtime
+FROM debian:trixie-slim AS runtime
 
 ARG INSTALL_PREFIX=/opt/clang-p2996
 
@@ -108,3 +116,46 @@ RUN find "${INSTALL_PREFIX}/lib" -name 'libc++.so*' -printf '%h\n' \
 ENV PATH="/opt/clang-p2996/bin:${PATH}"
 
 CMD ["clang", "--version"]
+
+#############################################
+# Dev stage: the runtime toolchain plus
+# developer tooling (Bazel, Java, git) and a
+# generic non-root user, for devcontainers
+#############################################
+FROM runtime AS dev
+
+ARG BAZELISK_VERSION="1.27.0"
+ARG BUILDIFIER_VERSION="8.2.1"
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Developer tooling: curl/git for downloads + source control, a JRE because
+# Bazel needs a Java runtime, and sudo for the dev user.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        git \
+        sudo \
+        default-jre-headless \
+    && rm -rf /var/lib/apt/lists/*
+
+# Bazelisk (the Bazel launcher that honours .bazelversion) plus the
+# buildifier/buildozer BUILD-file tools.
+RUN curl -fsSL "https://github.com/bazelbuild/bazelisk/releases/download/v${BAZELISK_VERSION}/bazelisk-amd64.deb" -o /tmp/bazelisk.deb \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends /tmp/bazelisk.deb \
+    && rm -rf /tmp/bazelisk.deb /var/lib/apt/lists/* \
+    && curl -fsSL "https://github.com/bazelbuild/buildtools/releases/download/v${BUILDIFIER_VERSION}/buildifier-linux-amd64" -o /usr/local/bin/buildifier \
+    && curl -fsSL "https://github.com/bazelbuild/buildtools/releases/download/v${BUILDIFIER_VERSION}/buildozer-linux-amd64" -o /usr/local/bin/buildozer \
+    && chmod +x /usr/local/bin/buildifier /usr/local/bin/buildozer
+
+# Create a generic 'dev' user with passwordless sudo. The devcontainer remaps
+# its UID/GID to the host user at creation time (updateRemoteUserUID).
+RUN groupadd --gid 1000 dev \
+    && useradd --uid 1000 --gid 1000 -m dev \
+    && echo "dev ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/dev \
+    && chmod 0440 /etc/sudoers.d/dev
+
+USER dev
+WORKDIR /home/dev
+SHELL ["/bin/bash", "-c"]
