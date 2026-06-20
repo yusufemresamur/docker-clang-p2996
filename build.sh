@@ -15,6 +15,8 @@ set -euo pipefail
 # what actually gets cloned during the build.
 CLANG_REPO="${CLANG_REPO:-https://github.com/bloomberg/clang-p2996.git}"
 CLANG_BRANCH="${CLANG_BRANCH:-p2996}"
+LLVM_ENABLE_PROJECTS="${LLVM_ENABLE_PROJECTS:-clang;clang-tools-extra}"
+LLVM_ENABLE_RUNTIMES="${LLVM_ENABLE_RUNTIMES:-libcxx;libcxxabi;libunwind}"
 IMAGE="${IMAGE:-clang-p2996}"
 
 # Resolve the latest commit on the branch without fetching the repo.
@@ -36,6 +38,8 @@ docker build \
     --build-arg "CLANG_REPO=${CLANG_REPO}" \
     --build-arg "CLANG_BRANCH=${CLANG_BRANCH}" \
     --build-arg "CLANG_COMMIT=${FULL_SHA}" \
+    --build-arg "LLVM_ENABLE_PROJECTS=${LLVM_ENABLE_PROJECTS}" \
+    --build-arg "LLVM_ENABLE_RUNTIMES=${LLVM_ENABLE_RUNTIMES}" \
     -t "${IMAGE}:${SHORT_SHA}" \
     -t "${IMAGE}:latest" \
     "$@" \

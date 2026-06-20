@@ -15,6 +15,8 @@ ARG INSTALL_PREFIX=/opt/clang-p2996
 
 # Use all available cores for the build unless overridden.
 ARG BUILD_JOBS
+ARG LLVM_ENABLE_PROJECTS="clang;clang-tools-extra"
+ARG LLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind"
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -62,8 +64,8 @@ RUN cmake -G Ninja -S llvm -B build \
         -DCMAKE_CXX_COMPILER=clang++ \
         -DCMAKE_C_COMPILER_LAUNCHER=ccache \
         -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-        -DLLVM_ENABLE_PROJECTS="clang" \
-        -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind" \
+        -DLLVM_ENABLE_PROJECTS="${LLVM_ENABLE_PROJECTS}" \
+        -DLLVM_ENABLE_RUNTIMES="${LLVM_ENABLE_RUNTIMES}" \
         -DLLVM_TARGETS_TO_BUILD=Native \
         -DLLVM_USE_LINKER=lld \
         -DLLVM_INCLUDE_TESTS=OFF \
