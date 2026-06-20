@@ -23,8 +23,10 @@ jobs:
       - name: Resolve clang-p2996 commit
         id: clang
         run: |
-          sha=$(git ls-remote https://github.com/bloomberg/clang-p2996.git refs/heads/p2996 | awk '{print substr($1,1,12)}')
-          echo "commit=$sha" >> "$GITHUB_OUTPUT"
+          full_sha=$(git ls-remote https://github.com/bloomberg/clang-p2996.git refs/heads/p2996 | awk '{print $1}')
+          short_sha="${full_sha:0:12}"
+          echo "commit=$short_sha" >> "$GITHUB_OUTPUT"
+          echo "full-commit=$full_sha" >> "$GITHUB_OUTPUT"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
@@ -34,7 +36,7 @@ jobs:
           tags: |
             docker.io/${{ secrets.DOCKERHUB_USERNAME }}/clang-p2996:latest
             docker.io/${{ secrets.DOCKERHUB_USERNAME }}/clang-p2996:${{ steps.clang.outputs.commit }}
-          build-args: CLANG_COMMIT=${{ steps.clang.outputs.commit }}
+          build-args: CLANG_COMMIT=${{ steps.clang.outputs.full-commit }}
           provenance: false
           cache-from: type=gha
           cache-to: type=gha,mode=max
