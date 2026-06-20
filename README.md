@@ -36,6 +36,18 @@ The [`Dockerfile`](Dockerfile) has three stages:
 
 ---
 
+## Pre-built image
+
+A pre-built image is available on Docker Hub:
+
+```sh
+docker pull yusufemresamur/clang-p2996:a56e7036fc1d
+```
+
+The tag `a56e7036fc1d` corresponds to the exact Bloomberg `p2996` branch commit the image was built from.
+
+---
+
 ## Build the image
 
 ```sh
