@@ -49,6 +49,5 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-
       - name: Compile examples
         run: bazelisk --output_user_root=/tmp/bazel-out build //...
