@@ -37,7 +37,7 @@ jobs:
           build-args: CLANG_COMMIT=${{ steps.clang.outputs.commit }}
           provenance: false
           cache-from: type=gha
-          cache-to: type=gha,mode=min
+          cache-to: type=gha,mode=max
 
   compile:
     runs-on: ubuntu-latest
