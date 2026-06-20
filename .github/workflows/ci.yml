@@ -30,9 +30,7 @@ jobs:
           context: .
           target: dev
           push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/clang-p2996:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/clang-p2996:${{ steps.clang.outputs.commit }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/clang-p2996:${{ steps.clang.outputs.commit }}
           build-args: CLANG_COMMIT=${{ steps.clang.outputs.commit }}
           provenance: false
           cache-from: type=gha
@@ -42,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-push
     container:
-      image: yusufemresamur/clang-p2996:latest
+      image: yusufemresamur/clang-p2996:${{ steps.clang.outputs.commit }}
       options: --user root
 
     steps:
