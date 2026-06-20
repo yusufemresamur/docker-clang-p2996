@@ -5,3 +5,9 @@ cc_binary(
     srcs = [":enum_to_string.cpp"],
     visibility = ["//visibility:public"],
 )
+
+cc_binary(
+    name = "struct_serialize",
+    srcs = [":struct_serialize.cpp"],
+    visibility = ["//visibility:public"],
+)
