@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-push
     container:
-      image: ${{ secrets.DOCKERHUB_USERNAME }}/clang-p2996:latest
+      image: yusufemresamur/clang-p2996:latest
       options: --user root
 
     steps:
