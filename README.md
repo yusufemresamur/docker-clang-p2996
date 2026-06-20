@@ -13,6 +13,7 @@ P2996 introduces first-class reflection into C++: the ability to inspect and man
 | [`Dockerfile`](Dockerfile) | Multi-stage build: compiles the toolchain, produces a minimal runtime image, and optionally a dev image with Bazel |
 | [`build.sh`](build.sh) | Convenience script — resolves the upstream branch tip and tags the image with the exact commit SHA |
 | [`src/enum_to_string.cpp`](src/enum_to_string.cpp) | Minimal reflection demo: compile-time enum-to-string via `std::meta` |
+| [`src/struct_serialize.cpp`](src/struct_serialize.cpp) | Reflection-driven struct serialization: iterates fields via `nonstatic_data_members_of` to pack/unpack structs without padding bytes |
 | [`MODULE.bazel`](MODULE.bazel) / [`src/BUILD.bazel`](src/BUILD.bazel) | Bazel build files with reflection flags pre-configured |
 
 ---
