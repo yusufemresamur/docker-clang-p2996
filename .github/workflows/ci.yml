@@ -30,7 +30,6 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          target: dev
           push: true
           tags: |
             docker.io/${{ secrets.DOCKERHUB_USERNAME }}/clang-p2996:latest
