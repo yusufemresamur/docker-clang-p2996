@@ -16,9 +16,10 @@ concept Serializable = std::is_trivially_copyable_v<T>;
 //  ^^T                          reflect operator -> std::meta::info for T
 //  nonstatic_data_members_of    list all fields  -> consteval vector<info>
 //  access_context::unchecked()  skip visibility checks (include private fields)
-//  define_static_array          materialize the consteval range so template for can iterate it
-//  template for                 expansion statement: one instantiation per element
-//  std::meta::size_of(m)        sizeof the field's type via reflection (no object needed)
+//  define_static_array          materialize the consteval range so template for
+//  can iterate it template for                 expansion statement: one
+//  instantiation per element std::meta::size_of(m)        sizeof the field's
+//  type via reflection (no object needed)
 template <typename T> consteval size_t packed_size() {
   size_t n = 0;
   template for (constexpr auto m :
@@ -47,9 +48,9 @@ std::array<uint8_t, packed_size<T>()> serialize(const T &obj) {
 }
 
 // Deserialize the same field order back into T.
-template <Serializable T>
-T deserialize(std::span<const uint8_t> buf) {
-  assert(buf.size() == packed_size<T>() && "buffer size does not match packed size of T");
+template <Serializable T> T deserialize(std::span<const uint8_t> buf) {
+  assert(buf.size() == packed_size<T>() &&
+         "buffer size does not match packed size of T");
   T obj{};
   size_t offset = 0;
 
