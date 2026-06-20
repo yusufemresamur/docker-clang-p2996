@@ -12,7 +12,7 @@ P2996 introduces first-class reflection into C++: the ability to inspect and man
 |------|-------------|
 | [`Dockerfile`](Dockerfile) | Multi-stage build: compiles the toolchain, produces a minimal runtime image, and optionally a dev image with Bazel |
 | [`build.sh`](build.sh) | Convenience script — resolves the upstream branch tip and tags the image with the exact commit SHA |
-| [`src/main.cpp`](src/main.cpp) | Minimal reflection demo: compile-time enum-to-string via `std::meta` |
+| [`src/enum_to_string.cpp`](src/enum_to_string.cpp) | Minimal reflection demo: compile-time enum-to-string via `std::meta` |
 | [`MODULE.bazel`](MODULE.bazel) / [`src/BUILD.bazel`](src/BUILD.bazel) | Bazel build files with reflection flags pre-configured |
 
 ---
@@ -58,7 +58,7 @@ Reflection requires three flags and libc++ (the `<experimental/meta>` header shi
 # Compile
 docker run --rm -v "$PWD/src:/src" -w /src clang-p2996 \
   clang++ -std=c++26 -freflection -fexpansion-statements -stdlib=libc++ \
-  main.cpp -o demo
+  enum_to_string.cpp -o demo
 
 # Run
 docker run --rm -v "$PWD/src:/src" -w /src clang-p2996 ./demo
@@ -97,7 +97,7 @@ bazelisk run   //src:demo
 
 ## The reflection demo
 
-[`src/main.cpp`](src/main.cpp) demonstrates a compile-time `enum_to_string` function using the core P2996 primitives:
+[`src/enum_to_string.cpp`](src/maenum_to_stringin.cpp) demonstrates a compile-time `enum_to_string` function using the core P2996 primitives:
 
 ```cpp
 template <typename E>
