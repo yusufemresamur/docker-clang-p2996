@@ -100,8 +100,7 @@ blue
 The repository includes a Bazel workspace with the reflection flags already wired up. Run from the project root (Bazelisk and a JRE must be available on your host, or use the `dev` Docker stage):
 
 ```sh
-bazelisk build //src:demo
-bazelisk run   //src:demo
+bazelisk build //...
 ```
 
 `.bazelversion` pins Bazel `8.*` via Bazelisk. The `runtime` image does not include Bazel — install [Bazelisk](https://github.com/bazelbuild/bazelisk) in your environment or use the `dev` stage instead.
@@ -110,7 +109,7 @@ bazelisk run   //src:demo
 
 ## The reflection demo
 
-[`src/enum_to_string.cpp`](src/maenum_to_stringin.cpp) demonstrates a compile-time `enum_to_string` function using the core P2996 primitives:
+[`src/enum_to_string.cpp`](src/enum_to_string.cpp) demonstrates a compile-time `enum_to_string` function using the core P2996 primitives:
 
 ```cpp
 template <typename E>
