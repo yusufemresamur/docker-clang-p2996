@@ -34,6 +34,7 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/clang-p2996:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/clang-p2996:${{ steps.clang.outputs.commit }}
           build-args: CLANG_COMMIT=${{ steps.clang.outputs.commit }}
+          provenance: false
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
