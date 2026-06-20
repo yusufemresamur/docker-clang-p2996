@@ -30,7 +30,9 @@ jobs:
           context: .
           target: dev
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/clang-p2996:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/clang-p2996:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/clang-p2996:${{ steps.clang.outputs.commit }}
           build-args: CLANG_COMMIT=${{ steps.clang.outputs.commit }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
