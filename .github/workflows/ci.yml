@@ -23,7 +23,7 @@ jobs:
       - name: Resolve clang-p2996 commit
         id: clang
         run: |
-          sha=$(git ls-remote https://github.com/bloomberg/clang-p2996.git refs/heads/p2996 | awk '{print $1}')
+          sha=$(git ls-remote https://github.com/bloomberg/clang-p2996.git refs/heads/p2996 | awk '{print substr($1,1,7)}')
           echo "commit=$sha" >> "$GITHUB_OUTPUT"
 
       - name: Build and push Docker image
