@@ -1,0 +1,39 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build-and-compile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Resolve clang-p2996 commit
+        id: clang
+        run: |
+          sha=$(git ls-remote https://github.com/bloomberg/clang-p2996.git refs/heads/p2996 | awk '{print $1}')
+          echo "commit=$sha" >> "$GITHUB_OUTPUT"
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: dev
+          load: true
+          tags: clang-p2996:ci
+          build-args: CLANG_COMMIT=${{ steps.clang.outputs.commit }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Compile examples
+        run: |
+          docker run --rm \
+            --user root \
+            -v "$GITHUB_WORKSPACE:/workspace" \
+            -w /workspace \
+            clang-p2996:ci \
+            bazel --output_user_root=/tmp/bazel-out build //src/...
